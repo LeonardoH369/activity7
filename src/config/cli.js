@@ -1,0 +1,13 @@
+require('dotenv').config({ quiet: true });
+const config = {
+  host: process.env.DB_HOST || '127.0.0.1',
+  port: Number(process.env.DB_PORT || 3306),
+  database: process.env.DB_NAME || 'activity7',
+  username: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  dialect: 'mysql',
+  logging: false,
+  seederStorage: 'sequelize',
+  define: { underscored: true },
+};
+module.exports = { development: config, test: config };
