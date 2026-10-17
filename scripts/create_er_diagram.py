@@ -32,8 +32,9 @@ def relation(points,left,right,label,label_xy):
     c.drawString(*left[0],left[1]);c.drawString(*right[0],right[1])
     c.setFont('Helvetica',11);c.drawString(*label_xy,label)
 
-entity(40,485,300,205,'users',[
- 'id  INT UNSIGNED  PK', 'name  VARCHAR(100)', 'email  VARCHAR(150)  UQ',
+entity(40,445,300,245,'users',[
+ 'id  INT UNSIGNED  PK', 'username  VARCHAR(50)  UQ', 'name  VARCHAR(100)',
+ 'email  VARCHAR(150)  UQ', 'password_hash  VARCHAR(255)',
  'role  ENUM  NOT NULL', 'group_id  INT UNSIGNED  FK  NULL'])
 entity(40,120,300,155,'groups',[
  'id  INT UNSIGNED  PK','name  VARCHAR(50)  UQ'])
@@ -48,7 +49,7 @@ entity(780,535,300,155,'robotics_kits',[
 entity(780,120,300,175,'didactic_materials',[
  'id  INT UNSIGNED  PK', 'title  VARCHAR(150)', 'file_url  VARCHAR(255)'])
 
-relation([(190,275),(190,485)],((139,287),'0..1*'),((140,465),'0..N'),'pertenencia',(207,378))
+relation([(190,275),(190,445)],((139,287),'0..1*'),((140,425),'0..N'),'pertenencia',(207,378))
 relation([(340,197),(410,197)],((345,208),'1'),((372,175),'0..N'),'asigna',(347,229))
 relation([(560,275),(560,445)],((573,287),'0..N'),((575,425),'1'),'curso asignado',(576,355))
 relation([(710,610),(780,610)],((715,589),'0..N'),((760,589),'1'),'kit',(735,629))

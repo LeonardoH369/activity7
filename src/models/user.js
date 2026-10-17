@@ -1,11 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    username: { type: DataTypes.STRING(50), allowNull: false, unique: true },
+    password_hash: { type: DataTypes.STRING(255), allowNull: false },
     name: { type: DataTypes.STRING(100), allowNull: false },
     email: { type: DataTypes.STRING(150), allowNull: false, unique: true, validate: { isEmail: true } },
     role: { type: DataTypes.ENUM('student', 'teacher', 'administrator'), allowNull: false },
     group_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true }
   }, { tableName: 'users', underscored: true,
+    defaultScope: { attributes: { exclude: ['password_hash'] } },
     validate: { roleGroup() {
       const hasGroup = this.group_id !== null && this.group_id !== undefined;
       if ((this.role === 'student') !== hasGroup) throw new Error('Solo los estudiantes deben tener exactamente un grupo');

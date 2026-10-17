@@ -1,4 +1,6 @@
 'use strict';
+const { randomBytes } = require('node:crypto');
+const { hashPassword } = require('../utils/password');
 const data = {
   "groups": [
     {
@@ -153,7 +155,7 @@ module.exports = {
     await queryInterface.sequelize.transaction(async (transaction) => {
       const now = new Date();
       for (const [table, rows] of Object.entries(data)) {
-        await queryInterface.bulkInsert(table, rows.map((row) => ({ ...row, created_at: now, updated_at: now })), { transaction });
+        await queryInterface.bulkInsert(table, rows.map((row) => ({ ...row, ...(table === 'users' ? { username: `user_${row.id}`, password_hash: hashPassword(randomBytes(32).toString('hex')) } : {}), created_at: now, updated_at: now })), { transaction });
       }
     });
   },
