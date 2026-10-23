@@ -1,0 +1,35 @@
+require('dotenv').config({quiet:true});
+const express = require('express');
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const helmet = require('helmet');
+const { rateLimit } = require('express-rate-limit');
+const path = require('node:path');
+const { db } = require('./models');
+const auth = require('./controllers/AuthController');
+const { csrf, currentUser, requireAuth, guestOnly } = require('./middleware/security');
+function createApp() {
+ if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 48) throw new Error('Configura SESSION_SECRET con al menos 48 caracteres aleatorios.');
+ const app = express();
+ app.disable('x-powered-by');
+ app.use(helmet());
+ app.use(express.static(path.join(__dirname,'../public')));
+ app.use(express.urlencoded({extended:false,limit:'10kb'}));
+ app.set('view engine','ejs'); app.set('views',path.join(__dirname,'views'));
+ const store = new SequelizeStore({db,checkExpirationInterval:15*60*1000,expiration:60*60*1000});
+ app.locals.sessionStore = store;
+ app.use(session({name:'activity9.sid',secret:process.env.SESSION_SECRET,store,resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:60*60*1000}}));
+ app.use((req,res,next)=>{res.set('Cache-Control','no-store');res.locals.user=null; next();});
+ app.use(currentUser,csrf);
+ const limit = rateLimit({windowMs:15*60*1000,limit:20,standardHeaders:'draft-8',legacyHeaders:false,handler:(req,res)=>res.status(429).render('error',{title:'Espera un momento',message:'Demasiados intentos. Vuelve a intentarlo en 15 minutos.'})});
+ app.get('/',(req,res)=>req.user?res.redirect(303,'/dashboard'):res.render('landingpage',{title:'Landingpage'}));
+ app.get('/landingpage',(req,res)=>res.render('landingpage',{title:'Landingpage'}));
+ app.get('/register',guestOnly,auth.registerForm); app.post('/register',guestOnly,limit,auth.register);
+ app.get('/login',guestOnly,auth.loginForm); app.post('/login',guestOnly,limit,auth.login);
+ app.post('/logout',requireAuth,auth.logout);
+ app.get('/dashboard',requireAuth,(req,res)=>res.render('dashboard',{title:'Dashboard',authenticatedAt:req.session.authenticatedAt}));
+ app.use((req,res)=>res.status(404).render('error',{title:'Página no encontrada',message:'Esta dirección no existe.'}));
+ app.use((err,req,res,next)=>{if(res.headersSent)return next(err); console.error('Request failed:',err.name); res.status(err.type==='entity.too.large'?413:500).render('error',{title:'No fue posible completar la solicitud',message:'Inténtalo de nuevo en unos momentos.'});});
+ return app;
+}
+module.exports = createApp;
