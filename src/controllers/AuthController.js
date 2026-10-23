@@ -1,4 +1,5 @@
-const { User } = require('../models');
+const mailer = require('../services/mailer');
+const { db, User } = require('../models');
 const { hashPassword, verifyPassword, dummy } = require('../security/password');
 const emailPattern = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
 const field = (body, key) => typeof body[key] === 'string' ? body[key] : '';
@@ -20,10 +21,17 @@ module.exports = {
   if (password.length < 12 || password.length > 128) errors.push('Usa una contraseña de 12 a 128 caracteres.');
   if (password !== confirmation) errors.push('Las contraseñas no coinciden.');
   if (errors.length) return renderForm(res,'register',errors,{name,email},422);
-  let user;
-  try { user = await User.create({name,email,password_hash:await hashPassword(password)}); }
+  let user, notification;
+  try {
+   const password_hash=await hashPassword(password);
+   await db.transaction(async transaction=>{
+    user=await User.create({name,email,password_hash},{transaction});
+    notification=await mailer.queue(user,'welcome',transaction);
+   });
+  }
   catch(e) { if(e.name === 'SequelizeUniqueConstraintError') return renderForm(res,'register',['No se pudo crear la cuenta con ese correo. Intenta iniciar sesión.'],{name,email},422); throw e; }
   await signIn(req,user);
+  await mailer.deliver(notification.id);
   return res.redirect(303,'/dashboard');
  },
  async login(req,res) {
@@ -33,6 +41,8 @@ module.exports = {
   const valid = await verifyPassword(password,user?.password_hash || dummy);
   if (!user || !valid) return renderForm(res,'login',['Correo o contraseña incorrectos.'],{email},401);
   await signIn(req,user);
+  const notification=await mailer.queue(user,'login');
+  await mailer.deliver(notification.id);
   return res.redirect(303,'/dashboard');
  },
  logout(req,res,next) { req.session.destroy(e => { if(e) return next(e); res.clearCookie('activity9.sid',{path:'/'}); res.redirect(303,'/'); }); }

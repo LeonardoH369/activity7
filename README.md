@@ -64,3 +64,47 @@ Capturas requeridas: landingpage; registro; login; dashboard con navbar autentic
 - https://expressjs.com/en/advanced/best-practice-security.html
 - https://expressjs.com/en/resources/middleware/session.html
 - https://sequelize.org/docs/v6/
+
+## Homework 8: correos
+
+El registro genera una bienvenida; cada login correcto posterior genera una alerta. El destinatario es el correo guardado en MySQL. Un login incorrecto no genera mensajes. Nodemailer crea versiones HTML/texto; `mail_events` conserva estados e intentos. Un fallo SMTP permite continuar al usuario y conserva el envío para reintento. No se guardan errores del proveedor que puedan incluir datos sensibles.
+
+### Prueba local y entrega real
+
+La configuración actual `MAIL_MODE=preview` genera archivos locales en `var/mail-preview`, excluidos de Git. **No envía correos a Internet** y nunca marca esas vistas previas como `sent`.
+
+Para un SMTP real, configura `.env` con tus propios valores. No publiques credenciales ni las pegues en el chat. Ejemplo Gmail (contraseña de aplicación, si tu cuenta lo permite):
+
+```dotenv
+MAIL_MODE=smtp
+MAIL_FROM="Activity 9 <TU_CORREO>"
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=TU_CORREO
+SMTP_PASSWORD=TU_CONTRASENA_DE_APLICACION
+```
+
+Para puerto 587, usa `SMTP_SECURE=false`: se exige STARTTLS. La validación de certificados permanece activa.
+
+```powershell
+npm run mail:verify
+npm start
+```
+
+`mail:verify` comprueba conexión y autenticación, no recepción en la bandeja de entrada. Registra una cuenta con un buzón que controles y comprueba la bienvenida; cierra sesión y vuelve a entrar para comprobar la alerta. Revisa spam. `sent` significa aceptado por el servidor SMTP, no garantiza entrega al buzón.
+
+`npm run mail:retry` procesa hasta 100 eventos pendientes/fallidos, con máximo 5 intentos por evento. Recupera eventos interrumpidos tras 5 minutos. Los eventos `preview` no se reenvían automáticamente al cambiar a SMTP: crea un registro nuevo y un login nuevo para las evidencias. Un corte entre aceptación SMTP y actualización de la base puede producir un duplicado; no se garantiza entrega exactamente una vez.
+
+### Entrega pendiente
+
+Falta configurar SMTP propio, comprobar recepción real, agregar capturas y publicar en GitHub. Captura bienvenida y alerta ocultando direcciones completas y datos sensibles, sin ocultar asunto, contenido y fecha. Nunca publiques `.env`, `var`, hashes o volcados de usuarios.
+
+Reportes editables en preparación:
+
+- Activity 9: https://docs.google.com/document/d/16GQZ2LS82cvWQdguF4cZlId0mvRPhRzEwP0x883RtPY/edit
+- Homework 8: https://docs.google.com/document/d/1vfQRZ45jT5ofJBkSpWlCgMdWnR24WsT4e4qx_WH6gMM/edit
+
+El tag `activity-9` conserva autenticación y `homework-8` incorpora notificaciones. Las pruebas de correo utilizan un servidor SMTP local, no un buzón real. Ninguna de estas consignas exige un archivo SQL.
+
+Referencias: https://nodemailer.com/smtp y https://nodemailer.com/guides/using-gmail
