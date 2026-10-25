@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-25T03:34:21.489Z",
+  "transport": "SMTP local / Mailpit",
+  "externalDelivery": false,
+  "guestDashboard": "redirected to login",
+  "registration": "passed",
+  "login": "passed",
+  "recipientMatchesDatabase": true,
+  "messages": [
+    {
+      "subject": "Nuevo inicio de sesión en Activity 9",
+      "createdAt": "2026-10-24T21:34:21.477-06:00",
+      "recipient": "alumno-***@example.test"
+    },
+    {
+      "subject": "Bienvenido a Activity 9",
+      "createdAt": "2026-10-24T21:34:21.227-06:00",
+      "recipient": "alumno-***@example.test"
+    }
+  ]
+}

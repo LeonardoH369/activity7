@@ -137,4 +137,9 @@ Abre http://localhost:3009, registra una cuenta ficticia (por ejemplo, alumno@ex
 
 `npm run mail:demo` prueba por HTTP registro/login contra la app local y comprueba ambos destinatarios/asuntos con la API de Mailpit. Crea una cuenta ficticia; guarda credenciales únicamente en `var/demo-account.json` (ignorado), y un resumen sin contraseñas en `docs/evidence/local-mail-test.json`. No genera capturas y no sustituye la evidencia visual.
 
-Validación de esta ampliación: Mailpit instalado; dos pruebas de aislamiento local aprobadas. La conexión SMTP no pudo confirmarse porque el entorno detuvo el buzón. La repetición de pruebas con base de datos quedó bloqueada por el entorno de ejecución. Las 13 pruebas previas corresponden a la versión anterior a Mailpit. Capturas y recepción completa desde la app aún pendientes.
+Validación de esta ampliación: Mailpit instalado y conexión SMTP local verificada; dos pruebas de aislamiento local aprobadas. El flujo HTTP completo de registro, acceso al dashboard, logout y login se verificó el 24 de octubre de 2026 y Mailpit recibió ambos mensajes en el destinatario correspondiente. La repetición de la suite completa quedó interrumpida por la revisión automática del entorno. Las 13 pruebas previas corresponden a la versión anterior a Mailpit. La evidencia técnica se conserva en docs/evidence/local-mail-test.json. Las capturas aún están pendientes.
+
+
+### Capturas para los reportes
+
+Con la app y Mailpit activos, ejecuta `npm run evidence` en tu computadora (requiere Microsoft Edge instalado). Usa la cuenta ficticia de `npm run mail:demo`. Guarda siete PNG en `docs/screenshots`: landingpage, registro, login, acceso bloqueado, dashboard y los dos correos. Las imágenes de correo renderizan el HTML realmente recibido por Mailpit e indican PRUEBA LOCAL; no simulan un buzón externo. Las direcciones se ocultan. Este script fue revisado sintácticamente, pero no ejecutado desde el entorno de asistencia, que no dispone de control del navegador.
