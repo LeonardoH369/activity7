@@ -1,1 +1,41 @@
-{"name":"activity-9","version":"1.0.0","private":true,"description":"Autenticación MVC y notificaciones de acceso con Express y Sequelize","engines":{"node":">=22.13.0"},"scripts":{"start":"node src/server.js","dev":"node --watch src/server.js","db:create":"sequelize-cli db:create","db:migrate":"sequelize-cli db:migrate","db:status":"sequelize-cli db:migrate:status","test":"node --test --test-concurrency=1 tests/*.test.js","mail:verify":"node scripts/mail.js verify","mail:retry":"node scripts/mail.js retry"},"dependencies":{"connect-session-sequelize":"8.0.6","dotenv":"18.0.9","ejs":"7.0.2","express":"5.3.0","express-rate-limit":"8.7.1","express-session":"1.19.0","helmet":"8.3.0","mysql2":"3.24.6","nodemailer":"10.2.1","sequelize":"6.37.8"},"devDependencies":{"sequelize-cli":"6.6.5","smtp-server":"3.21.1","supertest":"7.3.1"},"overrides":{"uuid":"11.1.1"}}
+{
+  "name": "activity-9",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Autenticación MVC y notificaciones de acceso con Express y Sequelize",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:create": "sequelize-cli db:create",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:status": "sequelize-cli db:migrate:status",
+    "test": "node --test --test-concurrency=1 tests/*.test.js",
+    "mail:verify": "node scripts/mail.js verify",
+    "mail:retry": "node scripts/mail.js retry",
+    "mail:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Start-Mailpit.ps1",
+    "mail:demo": "node scripts/verify-local-mail.js"
+  },
+  "dependencies": {
+    "connect-session-sequelize": "8.0.6",
+    "dotenv": "18.0.9",
+    "ejs": "7.0.2",
+    "express": "5.3.0",
+    "express-rate-limit": "8.7.1",
+    "express-session": "1.19.0",
+    "helmet": "8.3.0",
+    "mysql2": "3.24.6",
+    "nodemailer": "10.2.1",
+    "sequelize": "6.37.8"
+  },
+  "devDependencies": {
+    "sequelize-cli": "6.6.5",
+    "smtp-server": "3.21.1",
+    "supertest": "7.3.1"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
+  }
+}

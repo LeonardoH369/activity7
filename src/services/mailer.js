@@ -10,7 +10,13 @@ function transportConfig() {
   if(process.env.NODE_ENV==='production') throw new Error('MAIL_MODE=preview no se permite en producción.');
   return {mode,transport:nodemailer.createTransport({streamTransport:true,buffer:true,newline:'unix'})};
  }
- if (mode !== 'smtp') throw new Error('MAIL_MODE debe ser preview o smtp.');
+ if (mode === 'local') {
+  if(process.env.NODE_ENV==='production') throw new Error('El buzón local no se permite en producción.');
+  // Deliberately fixed to loopback: unauthenticated SMTP must never target a remote host.
+  return {mode,transport:nodemailer.createTransport({host:'127.0.0.1',port:1025,secure:false,ignoreTLS:true,
+   connectionTimeout:5000,greetingTimeout:5000,socketTimeout:10000,disableFileAccess:true,disableUrlAccess:true})};
+ }
+ if (mode !== 'smtp') throw new Error('MAIL_MODE debe ser preview, local o smtp.');
  for (const key of ['SMTP_HOST','SMTP_USER','SMTP_PASSWORD','MAIL_FROM']) if(!process.env[key]) throw new Error('Falta configurar '+key);
  const secure=process.env.SMTP_SECURE==='true';
  return {mode,transport:nodemailer.createTransport({

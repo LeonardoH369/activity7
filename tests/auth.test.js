@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 require('dotenv').config({quiet:true});
+process.env.MAIL_MODE='preview';
 const {test,before,after} = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');

@@ -55,7 +55,7 @@ Verifican acceso de visitantes, formularios, validaciones, CSRF, hash, sesión, 
 
 ## Evidencias y GitHub
 
-Repositorio reutilizado por autorización del propietario: https://github.com/LeonardoH369/activity7. El proyecto dentro del repositorio se llama activity-9. La versión anterior se conserva en la rama archive/activity7-before-activity9. La publicación de este reemplazo debe confirmarse antes de entregar.
+Repositorio reutilizado por autorización del propietario: https://github.com/LeonardoH369/activity7. El proyecto dentro del repositorio se llama activity-9. La versión anterior se conserva en la rama archive/activity7-before-activity9. La publicación del reemplazo se confirmó en el commit 90dc347; la configuración posterior de Mailpit requiere un nuevo push.
 
 Capturas requeridas: landingpage; registro; login; dashboard con navbar autenticada; intento de visitar `/dashboard` en ventana privada que redirige a login. Usar una cuenta de prueba y ocultar datos personales.
 
@@ -71,7 +71,7 @@ El registro genera una bienvenida; cada login correcto posterior genera una aler
 
 ### Prueba local y entrega real
 
-La configuración actual `MAIL_MODE=preview` genera archivos locales en `var/mail-preview`, excluidos de Git. **No envía correos a Internet** y nunca marca esas vistas previas como `sent`.
+El modo opcional `MAIL_MODE=preview` genera archivos locales en `var/mail-preview`, excluidos de Git. La configuración elegida ahora es `MAIL_MODE=local` con Mailpit. **No envía correos a Internet** y nunca marca esas vistas previas como `sent`.
 
 Para un SMTP real, configura `.env` con tus propios valores. No publiques credenciales ni las pegues en el chat. Ejemplo Gmail (contraseña de aplicación, si tu cuenta lo permite):
 
@@ -118,3 +118,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Configure-Smtp.ps1
 ```
 
 El script solicita los datos en tu computadora y oculta la entrada de la contraseña. Conserva la configuración de la base de datos y actualiza únicamente las opciones de correo en `.env`. Después verifica SMTP. Reinicia la aplicación para aplicar los cambios.
+
+
+## Buzón local recomendado: Mailpit
+
+No requiere correo personal, contraseña SMTP ni Docker. En Windows ejecuta `npm run mail:local`: la primera vez descarga Mailpit v1.32.0 desde su repositorio oficial y comprueba SHA-256. Las siguientes veces usa el ejecutable guardado en `tools/mailpit`, excluido de Git.
+
+Mantén esa terminal abierta. Mailpit escucha solo en 127.0.0.1: SMTP 1025 y buzón http://localhost:8025. Los mensajes permanecen en `var/mailpit.db`, fuera de Git. No se entregan a Internet ni a un buzón personal.
+
+Con MySQL disponible y `MAIL_MODE=local` en `.env`, abre otra terminal:
+
+```powershell
+npm run mail:verify
+npm start
+```
+
+Abre http://localhost:3009, registra una cuenta ficticia (por ejemplo, alumno@example.test), revisa su bienvenida en Mailpit, cierra sesión y vuelve a entrar para ver la alerta. Esta recepción local debe identificarse como prueba; si el docente exige entrega a un buzón externo, configura el modo `smtp`.
+
+`npm run mail:demo` prueba por HTTP registro/login contra la app local y comprueba ambos destinatarios/asuntos con la API de Mailpit. Crea una cuenta ficticia; guarda credenciales únicamente en `var/demo-account.json` (ignorado), y un resumen sin contraseñas en `docs/evidence/local-mail-test.json`. No genera capturas y no sustituye la evidencia visual.
+
+Validación de esta ampliación: Mailpit instalado; dos pruebas de aislamiento local aprobadas. La conexión SMTP no pudo confirmarse porque el entorno detuvo el buzón. La repetición de pruebas con base de datos quedó bloqueada por el entorno de ejecución. Las 13 pruebas previas corresponden a la versión anterior a Mailpit. Capturas y recepción completa desde la app aún pendientes.
